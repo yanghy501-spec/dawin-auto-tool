@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>내 업무 자동화 도구 만들기 · 모바일 실습장</title>
+<style>
+:root{--ink:#0A1E55;--brand:#48A828;--tint:#F3FAEE;--surf:#F5F7FA;--rule:#E2E7EF;--body:#4A5568;--muted:#6B7280;--warn:#B45309}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;color:var(--ink);background:#fff;line-height:1.6;font-size:16px;padding-bottom:84px}
+header{background:var(--ink);color:#fff;padding:14px 16px}header b{font-size:17px}header span{display:block;color:#AFC0E0;font-size:13px}
+main{max-width:640px;margin:0 auto;padding:14px 14px 20px}section{display:none}section.on{display:block}
+h2{font-size:21px;margin:6px 0 4px}h3{font-size:16px;margin:22px 0 8px;color:var(--brand)}p{margin:6px 0}.lead{color:var(--body);font-size:15px;margin-bottom:10px}
+.step{background:var(--surf);border-radius:12px;padding:14px;margin:12px 0}.step>b:first-child{display:inline-block;background:var(--brand);color:#fff;border-radius:999px;min-width:26px;height:26px;line-height:26px;text-align:center;font-size:14px;margin-right:6px}
+.step.done{background:var(--tint)}
+.q{background:#fff;border-left:4px solid var(--ink);border-radius:8px;padding:10px 12px;margin:10px 0;font-size:15px;white-space:pre-wrap;word-break:keep-all;overflow-wrap:anywhere}
+.data{background:#fff;border:1px solid var(--rule);border-radius:8px;max-height:190px;overflow:auto;font-size:13px;margin:10px 0}
+.data pre{margin:0;padding:10px;white-space:pre-wrap;font-family:inherit}
+table{border-collapse:collapse;width:100%;font-size:13px}th{background:var(--ink);color:#fff;padding:6px 8px;text-align:left;position:sticky;top:0;white-space:nowrap}td{border-bottom:1px solid var(--rule);padding:6px 8px;white-space:nowrap}td.n{text-align:right}td.bad{background:#FEF3C7;color:var(--warn);font-weight:700}
+button{font-family:inherit;font-size:16px;font-weight:700;border-radius:10px;min-height:48px;padding:10px 14px;border:0;cursor:pointer}
+.btn{background:var(--brand);color:#fff;width:100%;margin-top:8px}.btn.ink{background:var(--ink)}.btn.line{background:#fff;color:var(--ink);border:1.5px solid var(--ink)}
+.row{display:flex;gap:8px}.row .btn{flex:1}
+.tip{background:var(--tint);border-radius:10px;padding:10px 12px;margin:10px 0;font-size:14.5px}
+.ans{display:none;background:var(--ink);color:#fff;border-radius:10px;padding:12px;margin-top:8px;font-size:15px}.ans.on{display:block}
+textarea,input[type=text]{width:100%;border:1.5px solid #c9d1de;border-radius:10px;padding:11px 12px;font-size:16px;font-family:inherit;background:#fff;color:var(--ink)}textarea{min-height:92px;resize:vertical}
+label.f{display:block;font-weight:700;margin:14px 0 6px}
+iframe{width:100%;height:440px;border:1.5px solid var(--rule);border-radius:10px;background:#fff;margin-top:10px;display:none}
+.code{background:#0A1E55;color:#E6ECFA;border-radius:10px;padding:4px 0;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;overflow:auto;margin:10px 0}
+.ln{padding:5px 12px;white-space:pre;border-left:5px solid transparent}.ln.c{color:#9FB2DB}.ln.sel{background:#1c3378}
+.ln.k0{border-left-color:#fff}.ln.k1{border-left-color:#7CC94F}.ln.k2{border-left-color:#F2B84B}.ln.no{background:#5b1d1d}
+.err{color:#FFB4A8}.opts{display:flex;gap:8px;flex-wrap:wrap}.opts button{flex:1;min-width:88px;background:#fff;border:1.5px solid var(--rule);color:var(--ink)}.opts button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.bar{display:flex;align-items:center;margin:6px 0;font-size:14px}.bar i{display:block;height:20px;background:var(--brand);border-radius:4px;margin:0 8px}.bar span:first-child{width:52px}
+nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--rule);display:flex;overflow-x:auto;padding:8px 8px calc(8px + env(safe-area-inset-bottom));gap:6px;z-index:5}
+nav button{flex:0 0 auto;min-height:44px;font-size:14px;background:#fff;border:1.5px solid var(--rule);color:var(--ink);border-radius:999px;padding:6px 14px}nav button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.foot{color:var(--muted);font-size:13px;margin-top:14px}.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-size:14.5px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}.toast.on{opacity:1}
+</style></head><body>
+<header><b>내 업무 자동화 도구 만들기</b><span>모바일 실습장 · 새봄유통 10월 자료(연습용 가상 회사)</span></header>
+<main>
+
+<section id="s0"><h2>시작</h2><p class="lead">이 페이지와 AI 앱, 두 개만 오가며 실습합니다. 자료는 모두 이 페이지 안에 있습니다.</p>
+<div class="step"><b>1</b>AI 앱(ChatGPT, Claude, Gemini 등)에 로그인되어 있는지 확인합니다.</div>
+<div class="step"><b>2</b>초록 버튼을 누르면 복사됩니다. AI 앱으로 가서 붙여 넣고 보냅니다.</div>
+<div class="step"><b>3</b>결과를 보고 이 페이지로 돌아와 다음 단계로 갑니다.</div>
+<div class="tip">무료 계정은 보낼 수 있는 요청 수가 정해져 있습니다. 한 번에 복사해서 한 번에 보냅니다.</div>
+<h3>AI에 넣지 않는 것</h3><p>개인정보(이름, 연락처, 주민번호), 회사 기밀(거래처, 단가, 계약 내용), 인증 정보(비밀번호, 인증키). 회사에 AI 사용 규정이 있으면 그 규정을 먼저 따릅니다.</p>
+<h3>설정에서 확인할 것</h3><p>AI 앱 설정에서 "데이터", "개인정보", "학습"이 들어간 항목을 찾아, 내 대화를 AI 학습에 쓰도록 되어 있는지 봅니다.</p></section>
+
+<section id="s1"><h2>1. 안전하게 시작하기</h2>
+<div class="step"><b>1</b>같은 질문을 넣고 옆 사람과 결과를 비교합니다.<div class="q" id="q_title">10월 매출 보고서의 제목을 5개 지어 주세요</div><button class="btn" data-copy="#q_title">복사</button></div>
+<div class="step"><b>2</b>고객 문의 목록입니다. 이대로 AI에 넣어도 될까요?<div class="data" id="inqBox"></div>
+<div class="row"><button class="btn ink" id="maskBtn">가명 처리하기</button><button class="btn line" id="maskUndo">되돌리기</button></div>
+<div class="ans" id="maskMap"></div><button class="btn" id="inqCopy" style="display:none">가명 처리한 목록 복사</button>
+<p class="foot">가명 처리는 이 휴대폰 안에서만 일어나고 어디에도 보내지 않습니다.</p></div>
+<div class="step"><b>3</b>가명 처리한 목록을 AI에 넣어 봅니다.<div class="q" id="q_inq">아래 고객 문의를 내용별로 분류하고, 종류마다 건수를 세어 주세요. 목록에 없는 내용은 쓰지 마세요.</div><button class="btn" id="inqAll" disabled>요청문과 목록 한 번에 복사</button></div>
+<p>마지막으로 「5 내 도구」 탭에 반복 업무 하나를 적습니다.</p></section>
+
+<section id="s2"><h2>2. 방법 1 지침</h2><p class="lead">잘 통한 요청문을 저장해 두고 다시 씁니다.</p>
+<h3>1주차 회의 메모</h3><div class="data"><pre id="memo1"></pre></div>
+<div class="step"><b>1</b>한 줄로 시켜 봅니다.<div class="q" id="q_one">주간 보고로 정리해 주세요</div><button class="btn" data-copy="#q_one,#memo1">요청문과 메모 한 번에 복사</button></div>
+<div class="step"><b>2</b>P·C·I로 다시 시킵니다. 복사한 뒤 한 군데 이상 내 식으로 고쳐서 보냅니다.<div class="q" id="q_pci">당신은 영업지원팀의 주간 보고 담당자입니다. 아래 회의 메모로 주간 보고를 작성해 주세요.
+읽는 사람은 팀장이고, 월요일 회의 전에 3분 안에 읽습니다.
+순서는 결정 사항, 진행 중인 일, 다음 주 할 일입니다.
+항목마다 담당자와 날짜를 적어 주세요.
+메모에 없는 내용은 쓰지 말고, 불분명한 부분은 맨 아래에 "확인 필요"로 따로 적어 주세요.</div><button class="btn" data-copy="#q_pci,#memo1">요청문과 메모 한 번에 복사</button></div>
+<div class="step"><b>3</b>지침으로 저장합니다. AI 앱 안에 저장하거나(프로젝트, 맞춤 지침 등 앱마다 이름이 다릅니다), 휴대폰 메모 앱에 붙여 둡니다.<button class="btn line" data-copy="#q_pci">요청문만 복사</button></div>
+<h3>2주차 회의 메모</h3><div class="data"><pre id="memo2"></pre></div>
+<div class="step"><b>4</b>저장한 지침에 2주차 메모만 넣습니다. 같은 형식으로 나오는지 봅니다.<button class="btn" data-copy="#memo2">2주차 메모만 복사</button></div>
+<div class="step"><b>5</b>확인합니다. 보고서에 즉석밥 납품 날짜가 며칠로 나왔나요?<button class="btn line" data-ans="#a_date">정답 보기</button><div class="ans" id="a_date">10월 21일(수)입니다. 회의가 10월 12일 월요일이고 메모에는 "차주 수요일"이라고만 적혀 있습니다. 바로 아래 줄의 "14일"은 견적 회신 날짜입니다.</div></div>
+<h3>막힐 때 붙이는 한 줄</h3><div class="q" id="q_ask">필요한 정보를 저에게 질문해 주세요</div><button class="btn line" data-copy="#q_ask">복사</button></section>
+
+<section id="s3"><h2>3. 방법 2 HTML 도구</h2><p class="lead">자료를 붙여 넣으면 표와 차트가 나오는 화면을 만듭니다.</p>
+<div class="step"><b>1</b>도구를 요청합니다.<div class="q" id="q_tool">엑셀에서 복사한 표를 붙여 넣으면 결과를 보여 주는 도구를 만들어 주세요.
+넣는 것: 날짜, 품목, 수량, 단가, 금액, 담당자 열이 있는 표 (탭으로 구분된 글자)
+나오는 것: 품목별 금액 합계 표, 품목별 막대 차트, 맨 위에 총 금액
+형태: HTML 파일 하나. 휴대폰 화면 폭에 맞게
+조건: 인터넷 연결 없이 동작해야 합니다. 외부 라이브러리를 불러오지 마세요.
+전체 코드를 한 번에 주세요.</div><button class="btn" data-copy="#q_tool">복사</button></div>
+<div class="step"><b>2</b>AI가 준 코드 전체를 복사해 아래에 붙여 넣고 실행합니다.<textarea id="codeIn" placeholder="여기에 코드를 붙여 넣습니다"></textarea>
+<div class="row"><button class="btn ink" id="runBtn">실행</button><button class="btn line" id="refBtn">완성본으로 보기</button></div><iframe id="frame" sandbox="allow-scripts allow-forms"></iframe></div>
+<div class="step"><b>3</b>강남점 실적을 복사해 방금 만든 도구에 붙여 넣습니다.<div class="data" id="salesBox"></div><button class="btn" id="salesCopy">강남점 표 복사</button></div>
+<div class="step"><b>4</b>도구가 계산한 총 금액이 맞는지 확인합니다.<button class="btn line" data-ans="#a_sum">정답 보기</button><div class="ans" id="a_sum"></div></div>
+<h3>고쳐 달라고 하기</h3><div class="q" id="q_fix">차트를 금액이 큰 순서로 정렬해 주세요. 전체 코드를 다시 주세요</div><button class="btn line" data-copy="#q_fix">복사</button>
+<div class="tip">만든 도구를 계속 쓰려면 코드를 메모 앱에 저장해 두거나, PC에서 「이름.html」 파일로 저장합니다.</div></section>
+
+<section id="s4"><h2>4. 방법 3 Python</h2><p class="lead">파일 여러 개를 한 번에 처리하는 코드입니다. 실행은 강사 화면으로 보고, 여기서는 읽고 줄이는 연습을 합니다.</p>
+<div class="step"><b>1</b>지점 파일 3개를 합쳐 합계를 내는 코드입니다. 줄을 누른 뒤 어느 구간인지 고릅니다.<div class="code" id="codeView"></div>
+<div class="opts" id="kOpts"><button data-k="0">입력</button><button data-k="1">처리</button><button data-k="2">출력</button></div><p id="kMsg" class="foot">줄 하나를 눌러 보세요.</p></div>
+<div class="step"><b>2</b>이 코드를 실행하면 이렇게 나옵니다.<div id="pyOut"></div></div>
+<div class="step"><b>3</b>옆 사람에게 한 문장으로 설명합니다.<div class="q">"이 코드는 ___에서 ___을 읽어서, ___을 하고, ___로 저장합니다"</div></div>
+<div class="step"><b>4</b>필요 없는 기능을 줄여 달라고 합니다.<div class="q" id="q_cut">아래 코드에서 지점별 합계를 엑셀로 저장하는 것만 남기고 나머지 기능은 지워 주세요. 지운 내용을 목록으로 알려 주세요. 전체 코드를 다시 주세요.</div><button class="btn" id="cutCopy">요청문과 코드 한 번에 복사</button></div></section>
+
+<section id="s5"><h2>4. 오류가 났을 때</h2><p class="lead">긴 메시지에서 읽을 곳은 마지막 줄입니다.</p>
+<div id="errs"></div>
+<h3>오류가 났을 때 순서</h3><p>① 메시지 전체 복사 ② 내가 한 일과 함께 AI에 전달 ③ 원인 설명을 먼저 받기 ④ 한 곳만 고치기 ⑤ 다시 실행 ⑥ 세 번 해도 안 되면 사람에게 묻기</p></section>
+
+<section id="s6"><h2>5. 내 도구 만들기</h2><h3>내 과제</h3>
+<label class="f" for="f_job">매주 또는 매달 반복하는 일 하나</label><input type="text" id="f_job" placeholder="예: 지점 실적을 모아 월간 합계표 만들기">
+<label class="f" for="f_in">무엇을 받아서 (재료)</label><input type="text" id="f_in" placeholder="예: 지점별 엑셀 파일 3개">
+<label class="f" for="f_out">무엇을 만드는가 (결과물)</label><input type="text" id="f_out" placeholder="예: 지점별 합계표와 차트">
+<label class="f">맞는 방법</label><div class="opts" id="howOpts"><button data-v="지침">지침</button><button data-v="HTML 도구">HTML 도구</button><button data-v="Python">Python</button></div>
+<div class="tip">글을 받아 글로 → 지침 / 표를 붙여 넣어 화면으로 → HTML 도구 / 파일 여러 개, 많은 양 → Python(오늘은 요청문까지, 실행은 PC에서)</div>
+<div class="tip">실제 고객·거래처 정보는 넣지 않습니다. 마땅한 자료가 없으면 이 페이지의 새봄유통 자료로 만듭니다.</div>
+<h3>사용 매뉴얼</h3>
+<label class="f" for="m1">1. 이 도구가 하는 일</label><textarea id="m1"></textarea><label class="f" for="m2">2. 준비물</label><textarea id="m2"></textarea>
+<label class="f" for="m3">3. 사용 순서</label><textarea id="m3"></textarea><label class="f" for="m4">4. 사람이 확인할 것</label><textarea id="m4" placeholder="이 칸은 직접 씁니다"></textarea>
+<label class="f" for="m5">5. 안 될 때</label><textarea id="m5"></textarea><button class="btn" id="mcopy">매뉴얼 전체 복사</button>
+<p class="foot">적은 내용은 이 휴대폰의 이 브라우저에만 저장됩니다.</p></section>
+</main>
+<nav id="nav"></nav><div class="toast" id="toast">복사했습니다</div>
+<script>
+var D={"sales": {"강남점": [["날짜", "품목", "수량", "단가", "금액", "담당자"], ["2026-10-01", "라면 5입", 38, 4500, 171000, "이도현"], ["2026-10-02", "생수 2L 6입", 17, 4800, 81600, "김서연"], ["2026-10-03", "생수 2L 6입", 42, 4800, 201600, "김서연"], ["2026-10-03", "커피믹스 100T", 60, 15800, 948000, "김서연"], ["2026-10-03", "라면 5입", 24, 4500, 108000, "박하준"], ["2026-10-05", "라면 5입", 37, 4500, 166500, "김서연"], ["2026-10-05", "커피믹스 100T", 5, 15800, 79000, "김서연"], ["2026-10-06", "즉석밥 12입", 42, 13900, 583800, "김서연"], ["2026-10-06", "즉석밥 12입", 47, 13900, 653300, "이도현"], ["2026-10-07", "생수 2L 6입", 24, 4800, 115200, "박하준"], ["2026-10-07", "화장지 30롤", 43, 18900, 812700, "김서연"], ["2026-10-07", "라면 5입", 16, 4500, 72000, "김서연"], ["2026-10-07", "화장지 30롤", 43, 18900, 812700, "박하준"], ["2026-10-08", "커피믹스 100T", 25, 15800, 395000, "이도현"], ["2026-10-09", "즉석밥 12입", 49, 13900, 681100, "박하준"], ["2026-10-10", "화장지 30롤", 34, 18900, 642600, "박하준"], ["2026-10-10", "생수 2L 6입", 37, 4800, 177600, "박하준"], ["2026-10-11", "커피믹스 100T", 14, 15800, 221200, "이도현"], ["2026-10-12", "생수 2L 6입", 54, 4800, 259200, "김서연"], ["2026-10-12", "생수 2L 6입", 41, 4800, 196800, "이도현"], ["2026-10-14", "화장지 30롤", 21, 18900, 396900, "박하준"], ["2026-10-15", "커피믹스 100T", 11, 15800, 173800, "박하준"], ["2026-10-15", "라면 5입", 17, 4500, 76500, "박하준"], ["2026-10-18", "즉석밥 12입", 11, 13900, 152900, "이도현"], ["2026-10-19", "즉석밥 12입", 47, 13900, 653300, "이도현"], ["2026-10-20", "생수 2L 6입", 44, 4800, 211200, "이도현"], ["2026-10-24", "화장지 30롤", 16, 18900, 302400, "이도현"], ["2026-10-25", "라면 5입", 22, 4500, 99000, "김서연"], ["2026-10-26", "즉석밥 12입", 33, 13900, 458700, "이도현"], ["2026-10-26", "화장지 30롤", 48, 18900, 907200, "이도현"], ["2026-10-26", "생수 2L 6입", 38, 4800, 182400, "박하준"], ["2026-10-27", "즉석밥 12입", 17, 13900, 236300, "이도현"], ["2026-10-27", "라면 5입", 22, 4500, 99000, "박하준"], ["2026-10-27", "라면 5입", 37, 4500, 166500, "김서연"], ["2026-10-27", "생수 2L 6입", 30, 4800, 144000, "이도현"], ["2026-10-28", "즉석밥 12입", 13, 13900, 180700, "김서연"], ["2026-10-28", "커피믹스 100T", 42, 15800, 663600, "이도현"], ["2026-10-29", "라면 5입", 19, 4500, 85500, "김서연"], ["2026-10-31", "즉석밥 12입", 38, 13900, 528200, "이도현"], ["2026-10-31", "커피믹스 100T", 13, 15800, 205400, "김서연"]], "대전점": [["날짜", "품목", "수량", "단가", "금액", "담당자"], ["2026-10-02", "화장지 30롤", 53, 18900, 1001700, "정민재"], ["2026-10-03", "즉석밥 12입", 7, 13900, 97300, "최유나"], ["2026-10-03", "즉석밥 12입", 33, 13900, 458700, "한지우"], ["2026-10-07", "화장지 30롤", 22, 18900, 415800, "정민재"], ["2026-10-07", "생수 2L 6입", 41, 4800, 196800, "정민재"], ["2026-10-07", "화장지 30롤", 27, 18900, 510300, "정민재"], ["2026-10-07", "화장지 30롤", 14, 18900, 264600, "한지우"], ["2026-10-08", "라면 5입", 28, 4500, 126000, "한지우"], ["2026-10-08", "커피믹스 100T", 47, 15800, 742600, "한지우"], ["2026-10-08", "생수 2L 6입", 17, 4800, 81600, "최유나"], ["2026-10-09", "커피믹스 100T", 33, 15800, 521400, "최유나"], ["2026-10-09", "즉석밥 12입", 11, 13900, 152900, "정민재"], ["2026-10-11", "생수 2L 6입", 60, 4800, 288000, "최유나"], ["2026-10-12", "커피믹스 100T", 37, 15800, 584600, "한지우"], ["2026-10-12", "라면 5입", 41, 4500, 184500, "한지우"], ["2026-10-14", "즉석밥 12입", 45, 13900, 625500, "한지우"], ["2026-10-15", "커피믹스 100T", 18, 15800, 284400, "정민재"], ["2026-10-15", "생수 2L 6입", 50, 4800, 240000, "한지우"], ["2026-10-15", "커피믹스 100T", 38, 15800, 600400, "정민재"], ["2026-10-15", "즉석밥 12입", 19, 13900, 264100, "한지우"], ["2026-10-15", "즉석밥 12입", 9, 13900, 125100, "최유나"], ["2026-10-16", "라면 5입", 42, 4500, 189000, "최유나"], ["2026-10-16", "라면 5입", 39, 4500, 175500, "한지우"], ["2026-10-16", "즉석밥 12입", 53, 13900, 736700, "최유나"], ["2026-10-17", "라면 5입", 8, 4500, 36000, "정민재"], ["2026-10-18", "즉석밥 12입", 17, 13900, 236300, "한지우"], ["2026-10-18", "라면 5입", 19, 4500, 85500, "최유나"], ["2026-10-19", "커피믹스 100T", 55, 15800, 869000, "최유나"], ["2026-10-19", "커피믹스 100T", 12, 15800, 189600, "최유나"], ["2026-10-20", "즉석밥 12입", 17, 13900, 236300, "한지우"], ["2026-10-20", "화장지 30롤", 56, 18900, 1058400, "한지우"], ["2026-10-22", "라면 5입", 33, 4500, 148500, "최유나"], ["2026-10-25", "즉석밥 12입", 33, 13900, 458700, "최유나"], ["2026-10-26", "화장지 30롤", 20, 18900, 378000, "한지우"], ["2026-10-27", "커피믹스 100T", 56, 15800, 884800, "최유나"], ["2026-10-27", "생수 2L 6입", 33, 4800, 158400, "정민재"], ["2026-10-27", "커피믹스 100T", 29, 15800, 458200, "최유나"], ["2026-10-27", "즉석밥 12입", 35, 13900, 486500, "한지우"], ["2026-10-28", "화장지 30롤", 33, 18900, 623700, "최유나"], ["2026-10-31", "즉석밥 12입", 49, 13900, 681100, "한지우"]], "부산점": [["날짜", "품목", "수량", "단가", "금액", "담당자"], ["2026-10-01", "커피믹스 100T", 51, 15800, 805800, "오세린"], ["2026-10-01", "라면 5입", 14, 4500, 63000, "임가은"], ["2026-10-03", "생수 2L 6입", 13, 4800, 62400, "오세린"], ["2026-10-04", "커피믹스 100T", 5, 15800, 79000, "임가은"], ["2026-10-05", "즉석밥 12입", 8, 13900, 111200, "임가은"], ["2026-10-05", "커피믹스 100T", 11, 15800, 173800, "윤태호"], ["2026-10-06", "즉석밥 12입", 60, 13900, 834000, "임가은"], ["2026-10-08", "라면 5입", 26, 4500, 117000, "임가은"], ["2026-10-10", "커피믹스 100T", 38, 15800, 600400, "오세린"], ["2026-10-11", "라면 5입", 35, 4500, 157500, "임가은"], ["2026-10-11", "생수 2L 6입", 49, 4800, 235200, "오세린"], ["2026-10-12", "커피믹스 100T", 49, 15800, 774200, "윤태호"], ["2026-10-12", "커피믹스 100T", 47, 15800, 742600, "오세린"], ["2026-10-13", "즉석밥 12입", 8, 13900, 111200, "임가은"], ["2026-10-13", "생수 2L 6입", 27, 4800, 129600, "임가은"], ["2026-10-13", "커피믹스 100T", 23, 15800, 363400, "오세린"], ["2026-10-13", "커피믹스 100T", 15, 15800, 237000, "임가은"], ["2026-10-13", "라면 5입", 29, 4500, 130500, "윤태호"], ["2026-10-14", "라면 5입", 55, 4500, 247500, "윤태호"], ["2026-10-14", "커피믹스 100T", 31, 15800, 489800, "임가은"], ["2026-10-14", "화장지 30롤", 18, 18900, 340200, "임가은"], ["2026-10-14", "화장지 30롤", 56, 18900, 1058400, "임가은"], ["2026-10-15", "즉석밥 12입", 46, 13900, 639400, "윤태호"], ["2026-10-15", "생수 2L 6입", 22, 4800, 105600, "오세린"], ["2026-10-16", "화장지 30롤", 54, 18900, 1020600, "오세린"], ["2026-10-16", "커피믹스 100T", 30, 15800, 474000, "오세린"], ["2026-10-16", "생수 2L 6입", 13, 4800, 62400, "임가은"], ["2026-10-17", "생수 2L 6입", 6, 4800, 28800, "오세린"], ["2026-10-17", "즉석밥 12입", 37, 13900, 514300, "윤태호"], ["2026-10-20", "화장지 30롤", 16, 18900, 302400, "윤태호"], ["2026-10-21", "생수 2L 6입", 59, 4800, 283200, "오세린"], ["2026-10-21", "라면 5입", 59, 4500, 265500, "윤태호"], ["2026-10-23", "화장지 30롤", 50, 18900, 945000, "오세린"], ["2026-10-24", "화장지 30롤", 57, 18900, 1077300, "윤태호"], ["2026-10-26", "즉석밥 12입", 35, 13900, 486500, "윤태호"], ["2026-10-27", "생수 2L 6입", 49, 4800, 235200, "오세린"], ["2026-10-28", "화장지 30롤", 17, 18900, 321300, "오세린"], ["2026-10-30", "생수 2L 6입", 46, 4800, 220800, "윤태호"], ["2026-10-30", "즉석밥 12입", 44, 13900, 611600, "윤태호"], ["2026-10-30", "생수 2L 6입", 52, 4800, 249600, "윤태호"]]}, "busanBad": [["날짜", "품목", "수량", "단가", "금액", "담당자"], ["2026-10-01", "커피믹스 100T", 51, 15800, 805800, "오세린"], ["2026-10-01", "라면 5입", 14, 4500, 63000, "임가은"], ["2026-10-03", "생수 2L 6입", 13, 4800, 62400, "오세린"], ["2026-10-04", "커피믹스 100T", 5, 15800, "79,000원", "임가은"], ["2026-10-05", "즉석밥 12입", 8, 13900, "111,200원", "임가은"], ["2026-10-05", "커피믹스 100T", 11, 15800, 173800, "윤태호"], ["2026-10-06", "즉석밥 12입", 60, 13900, 834000, "임가은"], ["2026-10-08", "라면 5입", 26, 4500, 117000, "임가은"], ["2026-10-10", "커피믹스 100T", 38, 15800, 600400, "오세린"], ["2026-10-11", "라면 5입", 35, 4500, "157,500원", "임가은"], ["2026-10-11", "생수 2L 6입", 49, 4800, 235200, "오세린"], ["2026-10-12", "커피믹스 100T", 49, 15800, 774200, "윤태호"], ["2026-10-12", "커피믹스 100T", 47, 15800, 742600, "오세린"], ["2026-10-13", "즉석밥 12입", 8, 13900, 111200, "임가은"], ["2026-10-13", "생수 2L 6입", 27, 4800, 129600, "임가은"], ["2026-10-13", "커피믹스 100T", 23, 15800, 363400, "오세린"], ["2026-10-13", "커피믹스 100T", 15, 15800, 237000, "임가은"], ["2026-10-13", "라면 5입", 29, 4500, 130500, "윤태호"], ["2026-10-14", "라면 5입", 55, 4500, 247500, "윤태호"], ["2026-10-14", "커피믹스 100T", 31, 15800, 489800, "임가은"], ["2026-10-14", "화장지 30롤", 18, 18900, "340,200원", "임가은"], ["2026-10-14", "화장지 30롤", 56, 18900, 1058400, "임가은"], ["2026-10-15", "즉석밥 12입", 46, 13900, 639400, "윤태호"], ["2026-10-15", "생수 2L 6입", 22, 4800, 105600, "오세린"], ["2026-10-16", "화장지 30롤", 54, 18900, 1020600, "오세린"], ["2026-10-16", "커피믹스 100T", 30, 15800, "474,000원", "오세린"], ["2026-10-16", "생수 2L 6입", 13, 4800, 62400, "임가은"], ["2026-10-17", "생수 2L 6입", 6, 4800, 28800, "오세린"], ["2026-10-17", "즉석밥 12입", 37, 13900, 514300, "윤태호"], ["2026-10-20", "화장지 30롤", 16, 18900, 302400, "윤태호"], ["2026-10-21", "생수 2L 6입", 59, 4800, 283200, "오세린"], ["2026-10-21", "라면 5입", 59, 4500, 265500, "윤태호"], ["2026-10-23", "화장지 30롤", 50, 18900, 945000, "오세린"], ["2026-10-24", "화장지 30롤", 57, 18900, 1077300, "윤태호"], ["2026-10-26", "즉석밥 12입", 35, 13900, 486500, "윤태호"], ["2026-10-27", "생수 2L 6입", 49, 4800, 235200, "오세린"], ["2026-10-28", "화장지 30롤", 17, 18900, 321300, "오세린"], ["2026-10-30", "생수 2L 6입", 46, 4800, 220800, "윤태호"], ["2026-10-30", "즉석밥 12입", 44, 13900, 611600, "윤태호"], ["2026-10-30", "생수 2L 6입", 52, 4800, 249600, "윤태호"]], "memo1": "새봄유통 영업지원팀 주간회의 메모\n10월 5일(월) 오전 10시 / 참석: 김서연, 이도현, 박하준\n\n- 강남점 10월 행사 품목은 커피믹스로 확정. 행사 기간은 10/12~10/25. 담당 김서연.\n- 즉석밥 재고가 부족하다는 얘기 나옴. 이도현이 본사 물류에 추가 입고 가능한지 10/7까지 확인하기로.\n- 화장지 단가 인상 건은 이번 달은 보류하기로 결정. 11월 회의에서 다시 논의.\n- 대전점 진열대 교체 견적 받는 중. 업체 두 곳 중 한 곳만 회신 옴. 박하준이 계속 챙김.\n- 고객 문의 응대 문구 정리본 초안은 김서연이 작성 중. 반쯤 됨.\n- 부산점 배송 지연 민원 2건 있었음. 원인 파악 중(이도현).\n- 월간 실적 취합 양식을 지점마다 다르게 쓰고 있어서 하나로 통일하기로 결정. 양식 초안은 박하준이 10/9까지.\n- 다음 주 할 일: 행사 안내문 지점 배포(김서연), 추가 입고 결과 공유(이도현), 통일 양식 초안 회람(박하준)\n", "memo2": "새봄유통 영업지원팀 주간회의 메모\n10월 12일(월) 오전 10시 / 참석: 김서연, 이도현, 박하준\n\n- 커피믹스 행사 오늘부터 시작. 안내문은 지난주 금요일에 세 지점 모두 배포 완료(김서연).\n- 즉석밥 추가 입고 300박스 가능하다고 본사 회신 받음. 납품은 차주 수요일. 이도현이 지점별 배분 수량 정리.\n- 진열대 업체 견적은 14일까지 두 곳 모두 회신받기로 함. 박하준.\n- 통일 실적 양식 초안 회람했고, 수정 의견 2건 반영해서 이번 달 말 취합부터 쓰기로 결정.\n- 부산점 배송 지연은 택배사 지역 터미널 문제였던 것으로 확인. 재발하면 택배사 변경 검토하기로 결정(이도현).\n- 고객 문의 응대 문구 정리본은 이번 주 금요일까지 완성(김서연).\n- 11월 행사 품목 후보는 다음 회의에서 정하기로. 후보는 각자 1개씩 가져오기.\n- 다음 주 할 일: 즉석밥 지점별 배분표 공유(이도현), 진열대 업체 선정안 보고(박하준), 응대 문구 정리본 배포(김서연)\n", "inq": [["접수일", "이름", "전화번호", "지점", "문의 내용"], ["2026-10-03", "강민서", "010-0000-0011", "부산점", "배송이 언제 오는지 알고 싶습니다"], ["2026-10-03", "배시우", "010-0000-0020", "강남점", "세금계산서 발행 부탁드립니다"], ["2026-10-04", "문예린", "010-0000-0009", "대전점", "품절된 상품은 언제 들어오나요"], ["2026-10-07", "나수아", "010-0000-0005", "강남점", "대량 주문 할인이 되나요"], ["2026-10-10", "배시우", "010-0000-0010", "강남점", "세금계산서 발행 부탁드립니다"], ["2026-10-15", "강민서", "010-0000-0001", "부산점", "배송이 언제 오는지 알고 싶습니다"], ["2026-10-15", "구하은", "010-0000-0003", "부산점", "행사 기간이 언제까지인가요"], ["2026-10-15", "나수아", "010-0000-0015", "부산점", "대량 주문 할인이 되나요"]], "tool": "<!DOCTYPE html>\n<html lang=\"ko\"><head><meta charset=\"utf-8\"><title>실적 도구<\/title>\n<style>\nbody{font-family:\"Malgun Gothic\",sans-serif;max-width:900px;margin:24px auto;padding:0 16px;color:#1b2540}\ntextarea{width:100%;height:160px;font-size:14px;box-sizing:border-box}\nbutton{margin:10px 0;padding:10px 22px;font-size:16px;background:#0A1E55;color:#fff;border:0;border-radius:6px;cursor:pointer}\ntable{border-collapse:collapse;width:100%;margin:12px 0}td,th{border-bottom:1px solid #dde;padding:8px;text-align:left}td.n,th.n{text-align:right}\n#total{font-size:26px;font-weight:bold;margin:14px 0}.row{display:flex;align-items:center;margin:6px 0}.lab{width:150px}.bar{height:22px;background:#48A828;border-radius:3px}.val{margin-left:8px;font-size:13px}\n#msg{color:#b00020}\n<\/style><\/head><body>\n<h1>실적 도구<\/h1>\n<p>엑셀에서 표를 제목 줄까지 복사해 아래에 붙여 넣고 [실행]을 누르세요.<\/p>\n<textarea id=\"src\"><\/textarea><br><button onclick=\"run()\">실행<\/button><div id=\"msg\"><\/div>\n<div id=\"total\"><\/div><table id=\"tbl\"><\/table><div id=\"chart\"><\/div>\n<script>\nfunction run(){\n  var msg=document.getElementById('msg');msg.textContent='';\n  var lines=document.getElementById('src').value.trim().split(/\\r?\\n/).map(function(l){return l.split('\\t')});\n  if(lines.length<2){msg.textContent='표를 붙여 넣어 주세요.';return}\n  var head=lines[0].map(function(h){return h.trim()}),iItem=head.indexOf('품목'),iAmt=head.indexOf('금액');\n  if(iItem<0||iAmt<0){msg.textContent='제목 줄에 \"품목\"과 \"금액\" 열이 있어야 합니다.';return}\n  var sum={},total=0,bad=0;\n  for(var i=1;i<lines.length;i++){\n    var raw=(lines[i][iAmt]||'').replace(/[,원\\s]/g,''),v=Number(raw);\n    if(raw===''||isNaN(v)){bad++;continue}\n    var k=lines[i][iItem];sum[k]=(sum[k]||0)+v;total+=v}\n  var keys=Object.keys(sum).sort(function(a,b){return sum[b]-sum[a]}),max=sum[keys[0]]||1;\n  document.getElementById('total').textContent='총 금액 '+total.toLocaleString()+'원';\n  var t='<tr><th>품목<\/th><th class=\"n\">금액 합계<\/th><\/tr>',c='';\n  keys.forEach(function(k){t+='<tr><td>'+k+'<\/td><td class=\"n\">'+sum[k].toLocaleString()+'<\/td><\/tr>';\n    c+='<div class=\"row\"><div class=\"lab\">'+k+'<\/div><div class=\"bar\" style=\"width:'+(sum[k]/max*520)+'px\"><\/div><div class=\"val\">'+sum[k].toLocaleString()+'<\/div><\/div>'});\n  document.getElementById('tbl').innerHTML=t;document.getElementById('chart').innerHTML=c;\n  if(bad)msg.textContent='금액을 읽지 못한 줄이 '+bad+'개 있습니다. 확인해 주세요.';\n}\n<\/script><\/body><\/html>\n"};
+var $=function(s){return document.querySelector(s)},names=["시작","1 안전","2 지침","3 HTML 도구","4 Python","4 오류","5 내 도구"],nav=$("#nav");
+function show(i){document.querySelectorAll("section").forEach(function(s,k){s.classList.toggle("on",k===i)});nav.querySelectorAll("button").forEach(function(b,k){b.classList.toggle("on",k===i)});window.scrollTo(0,0);st.tab=i;save()}
+function toast(t){var e=$("#toast");e.textContent=t||"복사했습니다";e.classList.add("on");setTimeout(function(){e.classList.remove("on")},1400)}
+function copy(t){function fb(){var a=document.createElement("textarea");a.value=t;a.style.position="fixed";a.style.opacity="0";document.body.appendChild(a);a.focus();a.select();try{document.execCommand("copy");toast()}catch(e){toast("복사가 안 됩니다. 길게 눌러 복사해 주세요")}document.body.removeChild(a)}
+  if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(t).then(function(){toast()},fb);else fb()}
+var KEY="dawin-auto-mobile-v1",st={};try{st=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){st={}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
+function won(n){return Number(n).toLocaleString("ko-KR")}
+function tsv(rows){return rows.map(function(r){return r.join("\t")}).join("\n")}
+function tableHTML(rows,badCol){var h="<table><tr>"+rows[0].map(function(c){return "<th>"+c+"</th>"}).join("")+"</tr>";
+  for(var i=1;i<rows.length;i++)h+="<tr>"+rows[i].map(function(c,j){var num=typeof c==="number";var bad=(j===badCol&&!num);return "<td class='"+(num?"n":"")+(bad?" bad":"")+"'>"+(num?won(c):c)+"</td>"}).join("")+"</tr>";return h+"</table>"}
+$("#memo1").textContent=D.memo1;$("#memo2").textContent=D.memo2;
+document.querySelectorAll("[data-copy]").forEach(function(b){b.onclick=function(){copy(b.getAttribute("data-copy").split(",").map(function(s){return $(s).textContent.trim()}).join("\n\n"))}});
+document.querySelectorAll("[data-ans]").forEach(function(b){b.onclick=function(){$(b.getAttribute("data-ans")).classList.toggle("on")}});
+/* 1교시 가명 처리 */
+var inq=D.inq.map(function(r){return r.slice()}),masked=false;
+function drawInq(){$("#inqBox").innerHTML=tableHTML(inq)}
+$("#maskBtn").onclick=function(){var map={},n=0,out=[D.inq[0].filter(function(_,j){return j!==2})];
+  for(var i=1;i<D.inq.length;i++){var nm=D.inq[i][1];if(!map[nm])map[nm]="고객"+String.fromCharCode(65+n++);out.push([D.inq[i][0],map[nm],D.inq[i][3],D.inq[i][4]])}
+  inq=out;masked=true;drawInq();$("#maskMap").classList.add("on");$("#maskMap").innerHTML="이름 "+n+"명을 고객A~로 바꾸고 전화번호 열을 지웠습니다. 대응표(예: "+D.inq[1][1]+" → 고객A)는 이 화면에만 있습니다.";$("#inqCopy").style.display="block";$("#inqAll").disabled=false};
+$("#maskUndo").onclick=function(){inq=D.inq.map(function(r){return r.slice()});masked=false;drawInq();$("#maskMap").classList.remove("on");$("#inqCopy").style.display="none";$("#inqAll").disabled=true};
+$("#inqCopy").onclick=function(){copy(tsv(inq))};$("#inqAll").onclick=function(){copy($("#q_inq").textContent+"\n\n"+tsv(inq))};drawInq();
+/* 3교시 */
+var g=D.sales["강남점"];$("#salesBox").innerHTML=tableHTML(g);$("#salesCopy").onclick=function(){copy(tsv(g))};
+function total(rows){var t=0;for(var i=1;i<rows.length;i++)if(typeof rows[i][4]==="number")t+=rows[i][4];return t}
+$("#a_sum").textContent="강남점 총 금액은 "+won(total(g))+"원입니다. 다르게 나왔다면 그 숫자를 AI에게 알려 주고 원인을 물어봅니다.";
+function run(code){code=code.replace(/^\s*```[a-zA-Z]*\s*\n?/,"").replace(/\n?```\s*$/,"");if(!code.trim()){toast("코드를 먼저 붙여 넣어 주세요");return}var f=$("#frame");f.style.display="block";f.srcdoc=code;f.scrollIntoView({behavior:"smooth",block:"nearest"})}
+$("#runBtn").onclick=function(){run($("#codeIn").value)};$("#refBtn").onclick=function(){run(D.tool)};
+/* 4교시 */
+var CODE=[["from pathlib import Path",0,0],["import pandas as pd",0,0],["# 실적 폴더의 엑셀 파일을 모두 읽습니다",1,0],["for 파일 in (여기 / \"실적\").glob(\"*.xlsx\"):",0,0],["    표목록.append(pd.read_excel(파일))",0,0],
+["# 하나로 합친 뒤 지점별 합계를 구합니다",1,1],["전체 = pd.concat(표목록)",0,1],["합계 = 전체.groupby(\"지점\")[\"금액\"].sum()",0,1],
+["# 합계 표를 엑셀로, 차트를 그림으로 저장합니다",1,2],["합계.to_excel(여기 / \"합계.xlsx\")",0,2],["plt.bar(합계.index, 합계.values)",0,2],["plt.savefig(여기 / \"지점별차트.png\")",0,2]];
+var sel=-1,got={};
+function drawCode(){$("#codeView").innerHTML=CODE.map(function(l,i){return "<div class='ln"+(l[1]?" c":"")+(i===sel?" sel":"")+(got[i]!==undefined?" k"+got[i]:"")+"' data-i='"+i+"'>"+l[0].replace(/</g,"&lt;")+"</div>"}).join("")}
+$("#codeView").onclick=function(e){var t=e.target.closest(".ln");if(!t)return;sel=+t.getAttribute("data-i");drawCode();$("#kMsg").textContent="이 줄은 어느 구간일까요?"};
+$("#kOpts").onclick=function(e){var b=e.target.closest("button");if(!b||sel<0)return;var k=+b.getAttribute("data-k"),nm=["입력","처리","출력"];
+  if(CODE[sel][2]===k){got[sel]=k;var left=CODE.length-Object.keys(got).length;$("#kMsg").textContent="맞습니다. "+nm[k]+" 구간입니다."+(left?" 남은 줄 "+left+"개":" 전부 찾았습니다.")}else $("#kMsg").textContent="다시 골라 보세요. 이 줄이 읽는 일인지, 계산하는 일인지, 내놓는 일인지 봅니다.";drawCode()};
+drawCode();$("#cutCopy").onclick=function(){copy($("#q_cut").textContent+"\n\n"+CODE.map(function(l){return l[0]}).join("\n"))};
+var tot={},mx=0;Object.keys(D.sales).forEach(function(b){tot[b]=total(D.sales[b]);mx=Math.max(mx,tot[b])});
+$("#pyOut").innerHTML=Object.keys(tot).map(function(b){return "<div class='bar'><span>"+b+"</span><i style='width:"+(tot[b]/mx*46)+"%'></i><span>"+won(tot[b])+"</span></div>"}).join("");
+/* 5교시 */
+var badTot=total(D.busanBad),E=[
+ {t:"오류 1: 실행 환경",code:"from tabulate import tabulate",msg:"Traceback (most recent call last):\n  File \"오류1.py\", line 3, in <module>\n    from tabulate import tabulate\nModuleNotFoundError: No module named 'tabulate'",q:"마지막 줄은 무슨 뜻일까요?",a:"코드가 쓰려는 부품(tabulate)이 설치되어 있지 않다는 뜻입니다. 설치하면 해결됩니다."},
+ {t:"오류 2: 파일과 경로",code:"표 = pd.read_excel(여기 / \"실적\" / \"강남지점.xlsx\")",msg:"Traceback (most recent call last):\n  File \"오류2.py\", line 6, in <module>\nFileNotFoundError: [Errno 2] No such file or directory: '실적/강남지점.xlsx'\n\n[내 폴더의 파일 이름]\n실적/강남점.xlsx\n실적/대전점.xlsx\n실적/부산점.xlsx",q:"코드 속 이름과 실제 이름에서 다른 곳은 어디일까요?",a:"코드에는 강남지점.xlsx, 실제 파일은 강남점.xlsx입니다. 이름이 한 글자라도 다르면 찾지 못합니다."}];
+var h=E.map(function(e,i){return "<div class='step'><b>"+(i+1)+"</b>"+e.t+"<div class='code'><div class='ln'>"+e.code.replace(/</g,"&lt;")+"</div><div class='ln err' style='white-space:pre-wrap'>"+e.msg.replace(/</g,"&lt;")+"</div></div><p>"+e.q+"</p><div class='row'><button class='btn' data-e='"+i+"'>질문 글 복사</button><button class='btn line' data-ea='"+i+"'>풀이 보기</button></div><div class='ans' id='ea"+i+"'>"+e.a+"</div></div>"}).join("");
+h+="<div class='step'><b>3</b>오류 3: 데이터 형식<p>오류 메시지는 없습니다. 그런데 부산점 합계가 다르게 나왔습니다.</p><div class='bar'><span>4교시</span><i style='width:46%'></i><span>"+won(tot["부산점"])+"</span></div><div class='bar'><span>이번</span><i style='width:"+(badTot/tot["부산점"]*46)+"%;background:#F2B84B'></i><span>"+won(badTot)+"</span></div><p>아래 자료의 금액 칸에서 원인을 찾아봅니다.</p><div class='data' id='badBox'></div><div class='row'><button class='btn line' id='badShow'>원인 표시하기</button><button class='btn' id='badCopy'>고쳐 달라는 글 복사</button></div><div class='ans' id='badAns'>금액 칸 5곳에 \"원\"과 쉼표가 붙어 있습니다. 사람 눈에는 숫자지만 컴퓨터에게는 글자라서 계산에서 빠졌습니다. 빠진 금액은 "+won(tot["부산점"]-badTot)+"원입니다. 오류 메시지 없이 틀린 결과가 나오므로 검산이 필요합니다.</div></div>";
+$("#errs").innerHTML=h;var plain=D.busanBad.map(function(r){return r.slice()});
+function drawBad(mark){$("#badBox").innerHTML=tableHTML(D.busanBad,mark?4:-1)}drawBad(false);
+$("#badShow").onclick=function(){drawBad(true);$("#badAns").classList.add("on");var c=$("#badBox .bad");if(c)c.scrollIntoView({block:"center"})};
+$("#badCopy").onclick=function(){copy("금액 열에 쉼표와 '원'이 섞여 있습니다. 숫자로 바꾼 뒤 계산하게 고쳐 주세요. 전체 코드를 다시 주세요.\n\n전체[\"금액\"] = pd.to_numeric(전체[\"금액\"], errors=\"coerce\")\n합계 = 전체.groupby(\"지점\")[\"금액\"].sum()")};
+$("#errs").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;var i=b.getAttribute("data-e"),j=b.getAttribute("data-ea");
+  if(i!==null)copy("아래 코드를 실행했더니 오류가 났습니다. 원인을 초보자가 알 수 있게 설명하고, 어떻게 고치는지 순서대로 알려 주세요.\n\n[코드]\n"+E[i].code+"\n\n[오류 메시지]\n"+E[i].msg);
+  if(j!==null)$("#ea"+j).classList.toggle("on")});
+/* 내 과제 */
+["f_job","f_in","f_out","m1","m2","m3","m4","m5"].forEach(function(id){var el=$("#"+id);if(st[id])el.value=st[id];el.addEventListener("input",function(){st[id]=el.value;save()})});
+function drawHow(){document.querySelectorAll("#howOpts button").forEach(function(b){b.classList.toggle("on",st.how===b.getAttribute("data-v"))})}
+$("#howOpts").onclick=function(e){var b=e.target.closest("button");if(b){st.how=b.getAttribute("data-v");save();drawHow()}};drawHow();
+$("#mcopy").onclick=function(){var L=["이 도구가 하는 일","준비물","사용 순서","사람이 확인할 것","안 될 때"],o="";for(var i=1;i<=5;i++)o+=i+". "+L[i-1]+"\n"+$("#m"+i).value+"\n\n";copy(o)};
+names.forEach(function(n,i){var b=document.createElement("button");b.textContent=n;b.onclick=function(){show(i)};nav.appendChild(b)});show(st.tab||0);
+</script></body></html>
